@@ -12,6 +12,9 @@ import time
 # Min seconds between successive spoofed packets
 MIN_ARP_SPOOF_INTERVAL = 0.01
 
+# If we want to block a device, we should use the follow corrupt mac address as the source.
+CORRUPT_MAC_ADDRESS = '001122334455'
+
 
 class ArpSpoof(object):
 
@@ -106,7 +109,7 @@ class ArpSpoof(object):
 
                 utils.safe_run(
                     self._arp_spoof,
-                    args=(victim_mac, victim_ip, whitelist_ip_mac)
+                    args=(victim_device_id, victim_mac, victim_ip, whitelist_ip_mac)
                 )
 
                 with self._lock:
@@ -115,8 +118,18 @@ class ArpSpoof(object):
 
                 time.sleep(max(MIN_ARP_SPOOF_INTERVAL, 2.0 / len(ip_mac_dict)))
 
-    def _arp_spoof(self, victim_mac, victim_ip, whitelist_ip_mac):
+    def _arp_spoof(self, victim_device_id, victim_mac, victim_ip, whitelist_ip_mac):
         """Sends out spoofed packets for a single target."""
+
+        # Check if we want to block this device now     
+        block_device = False   
+        try:
+            with self._host_state.lock:
+                (block_start_ts, block_stop_ts) = self._host_state.block_device_dict[victim_device_id]
+            if block_start_ts <= time.time() <= block_stop_ts:
+                block_device = True
+        except KeyError:
+            pass
 
         with self._host_state.lock:
             spoof_arp = self._host_state.spoof_arp
@@ -143,6 +156,10 @@ class ArpSpoof(object):
             if not spoof_arp:
                 victim_arp.hwsrc = dest_mac
                 utils.log('[Arp Spoof] Restoring', dest_ip, '->', victim_ip)
+
+            if block_device:
+                dest_arp.hwsrc = CORRUPT_MAC_ADDRESS
+                victim_arp.hwsrc = CORRUPT_MAC_ADDRESS                
 
             sc.send(victim_arp, verbose=0)
             sc.send(dest_arp, verbose=0)

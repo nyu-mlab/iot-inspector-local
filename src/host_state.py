@@ -44,6 +44,7 @@ class HostState(object):
         self.last_ui_contact_ts = time.time()  # ts of /is_inspecting_traffic
         self.quit = False
         self.spoof_arp = True
+        self.block_device_dict = {}  # device_id -> (start_unix_ts, stop_unix_ts)
 
         # Constantly checks for IP changes on this host
         thread = threading.Thread(target=self.update_ip_thread)
