@@ -70,7 +70,9 @@ Do the following from the AR app:
                     "owner_company": "Google",
                     "ip_country_code": "US",
                     "purpose": "",
-                    "is_tracking": false
+                    "is_tracking": false,
+                    "inbound_bytes_per_second": 23,
+                    "outbound_bytes_per_second": 32
                 },
                 "35.112.131.5": {
                     "hostname": "server1.fbcdn.com",
@@ -78,7 +80,9 @@ Do the following from the AR app:
                     "owner_company": "Facebook",
                     "ip_country_code": "US",
                     "purpose": "",
-                    "is_tracking": true
+                    "is_tracking": true,
+                    "inbound_bytes_per_second": 23,
+                    "outbound_bytes_per_second": 32
                 },
 
             },

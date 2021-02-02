@@ -130,11 +130,13 @@ def get_traffic():
             if dest_ip not in device_dict:
                 device_dict[dest_ip] = {
                     'hostname': dest_domain,
-                    'short_domain': '',      # TODO; not implemented
-                    'owner_company': '',     # TODO; not implemented
-                    'ip_country_code': '',   # TODO; not implemented
-                    'purpose': '',           # TODO; not implemented
-                    'is_tracking': ''        # TODO; not implemented
+                    'short_domain': '',                 # TODO; not implemented
+                    'owner_company': '',                # TODO; not implemented
+                    'ip_country_code': '',              # TODO; not implemented
+                    'purpose': '',                      # TODO; not implemented
+                    'is_tracking': '',                  # TODO; not implemented
+                    'inbound_bytes_per_second': 0,     # TODO; not implemented
+                    'outbound_bytes_per_second': 0     # TODO; not implemented
                 }
 
         # Reset pending
