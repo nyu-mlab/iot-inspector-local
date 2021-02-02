@@ -38,9 +38,9 @@ Questions? Email us at iot-inspector@lists.cs.princeton.edu.
 def start():
     """
     Initializes inspector by spawning a number of background threads.
-    
+
     Returns the host state once all background threats are started.
-    
+
     """
     # Read from home directory the user_key. If non-existent, get one from
     # cloud.
@@ -73,9 +73,9 @@ def start():
     syn_scan_thread = SynScan(state)
     syn_scan_thread.start()
 
-    # Continuously gather SSDP data
-    netdisco_thread = NetdiscoWrapper(state)
-    netdisco_thread.start()
+    # # Continuously gather SSDP data
+    # netdisco_thread = NetdiscoWrapper(state)
+    # netdisco_thread.start()
 
     # Continuously capture packets
     packet_capture_thread = PacketCapture(state)
@@ -107,7 +107,7 @@ def start():
 
     print('\n' * 100)
 
-    os_platform = utils.get_os()    
+    os_platform = utils.get_os()
 
     if os_platform == 'windows':
         print(WINDOWS_STARTUP_TEXT.format(server_config.BASE_URL, pretty_user_key))
