@@ -1,10 +1,10 @@
 from flask import Flask, g
 import threading
 import utils
-import server_config
 import time
 import json
 import oui_parser
+import device_identification
 
 
 PORT = 46241
@@ -69,14 +69,14 @@ def get_device_list():
                 continue
 
             device_id = utils.get_device_id(mac, host_state)
-            device_vendor = oui_parser.get_vendor(utils.get_oui(mac))
 
             output_dict.setdefault(
-                device_id, 
+                device_id,
                 {
-                    'device_id': device_id, 
+                    'device_id': device_id,
                     'device_ip': ip,
-                    'device_vendor': device_vendor, 
+                    'device_name': device_identification.get_device_name(mac),
+                    'device_vendor': device_identification.get_device_vendor(mac),
                     'netdisco_name': '',
                     'dhcp_name': '',
                     'is_inspected': device_id in host_state.device_whitelist
@@ -139,7 +139,7 @@ def get_traffic():
 
         # Reset pending
         host_state.pending_flow_dict = {}
-    
+
     return json.dumps(output_dict, indent=2)
 
 
@@ -208,7 +208,7 @@ def block_device(device_id, start_unix_ts, stop_unix_ts):
 
     host_state = get_host_state()
     if host_state is not None:
-        with host_state.lock:    
+        with host_state.lock:
             host_state.block_device_dict[device_id] = (int(start_unix_ts), int(stop_unix_ts))
 
     return OK_JSON
@@ -219,7 +219,7 @@ def unblock_device(device_id):
 
     host_state = get_host_state()
     if host_state is not None:
-        with host_state.lock:  
+        with host_state.lock:
             if device_id in host_state.block_device_dict:
                 del host_state.block_device_dict[device_id]
 
@@ -233,7 +233,7 @@ def list_blocked_devices():
 
     host_state = get_host_state()
     if host_state is not None:
-        with host_state.lock:  
+        with host_state.lock:
             blocked_device_list = host_state.block_device_dict.keys()
 
     return json.dumps(blocked_device_list)

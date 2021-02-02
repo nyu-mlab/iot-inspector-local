@@ -22,7 +22,7 @@ Do the following from the AR app:
 
 2. Assuming no error, the response should be a JSON object: `{"status": "OK"}`.
 
-3. Issue an HTTP `GET` request to `http://10.0.0.X:46241/get_device_list`. The response should be a JSON object in the form of: 
+3. Issue an HTTP `GET` request to `http://10.0.0.X:46241/get_device_list`. The response should be a JSON object in the form of:
 
     ```
     {
@@ -30,14 +30,16 @@ Do the following from the AR app:
             "device_id": "abc001",
             "device_ip": "10.0.0.5",
             "device_vendor": "Google",      // name based on device's MAC address
-            "netdisco_name": "Google Home", // name inferred from a device's SSDP/mDNS 
-            "dhcp_name": "",                // name obtained from DHCP Requests   
+            "device_name": "Google Home",   // name based on IoT Inspector's device identification algorithm
+            "netdisco_name": "Google Home", // name inferred from a device's SSDP/mDNS
+            "dhcp_name": "",                // name obtained from DHCP Requests
             "is_inspected": true            // whether we are collecting traffic
         },
         "def002": {
             "device_id": "def002",
             "device_ip": "10.0.0.6",
             "device_vendor": "",
+            "device_name": "",
             "netdisco_name": "",
             "dhcp_name": "",
             "is_inspected": false
@@ -48,7 +50,7 @@ Do the following from the AR app:
     Note that the JSON object above constantly changes, as IoT Inspector scans for more devices. Examples of changes include:
 
     * New additions of devices. In fact, when you request `http://10.0.0.X:46241/get_device_list` for the first time, you will likely get back `{}`, since IoT Inspector is still in the process of scanning for new devices.
-    * Updates to device names. For example, you might get an empty string in `netdisco_name`, but a few seconds later it becomes `Smart TV`. 
+    * Updates to device names. For example, you might get an empty string in `netdisco_name`, but a few seconds later it becomes `Smart TV`.
 
     Because of the changes above, it is recommended that the AR app requests `http://10.0.0.X:46241/get_device_list` as often as possible.
 
@@ -60,7 +62,7 @@ Do the following from the AR app:
 
     ```
     {
-        'abc001': 
+        'abc001':
             {
                 "72.12.13.14": {
                     "hostname": "server1.googleusercontents.com",
