@@ -19,7 +19,12 @@ app = Flask(__name__)
 SHOW_DEVICE_TEMPLATE = """
 <html><head><title>Show Devices</title></head>
 <body>
-<h1>Debug Interface for IoT Inspector Local</h1>
+<h1>Debug Interface for Weijia to Take Devices Out of Inspection</h1>
+Instructions for Weijia:
+<ol>
+    <li>When you are able to experiment with a particular device, click the "Disable Inspection" link for that device (even if the device is currently not being inspected.) This will prevent others from inspecting the device.</li>
+    <li>When you are done with the experiment with that particular device, click the "Enable Inspection" link for that device.</li>
+</ol>
 <hr />
 <h3>Devices under inspection</h3>
 <ul>
@@ -67,7 +72,7 @@ def log_http_request(request_name):
             host_state.last_ui_contact_ts = time.time()
 
 
-@app.route('/show_devices', methods=['GET'])
+@app.route('/weijia_control_devices', methods=['GET'])
 def show_devices():
 
     inspected_text = ''
@@ -81,12 +86,51 @@ def show_devices():
         if name == '' or vendor == '':
             continue
 
+        item = f'<li>{vendor} {name} <small>[<a href="/weijia_enable_inspection/{device_id}">Enable Inspection</a> | <a href="/weijia_disable_inspection/{device_id}">Disable Inspection</a>]</small></li>\n'
+
         if device_dict['is_inspected']:
-            inspected_text += f'<li>{vendor} {name} <small>(<a href="/disable_inspection/{device_id}">Stop Inspection</a>)</small></li>\n'
+            inspected_text += item
         else:
-            not_inspected_text += f'<li>{vendor} {name} <small>(<a href="/enable_inspection/{device_id}">Start Inspection</a>)</small></li>\n'
+            not_inspected_text += item
 
     return SHOW_DEVICE_TEMPLATE.format(inspected_text=inspected_text, not_inspected_text=not_inspected_text)
+
+
+def get_weijia_black_list():
+
+    try:
+        with open('weijia_black_list.txt') as fp:
+            return json.load(fp)
+    except IOError:
+        return []
+
+
+def set_weijia_black_list(black_list):
+
+    with open('weijia_black_list.txt', 'w') as fp:
+        json.dump(black_list, fp)
+
+
+@app.route('/weijia_enable_inspection/<device_id>', methods=['GET'])
+def weijia_enable_inspection(device_id):
+
+    black_list = get_weijia_black_list()
+    if device_id in black_list:
+        black_list.remove(device_id)
+    set_weijia_black_list(black_list)
+
+    return enable_inspection(device_id)
+
+
+@app.route('/weijia_disable_inspection/<device_id>', methods=['GET'])
+def weijia_disable_inspection(device_id):
+
+    black_list = get_weijia_black_list()
+    if device_id not in black_list:
+        black_list.append(device_id)
+    set_weijia_black_list(black_list)
+
+    return disable_inspection(device_id)
 
 
 @app.route('/get_device_list', methods=['GET'])
@@ -255,6 +299,10 @@ def disable_inspection(device_id):
 
 @app.route('/enable_inspection/<device_id>', methods=['GET'])
 def enable_inspection(device_id):
+
+    black_list = get_weijia_black_list()
+    if device_id in black_list:
+        return OK_JSON
 
     host_state = get_host_state()
     if host_state is not None:
