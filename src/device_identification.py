@@ -16,7 +16,8 @@ MAC_TO_NAME_MAPPING = {
     'a477332fe06e': ('Google', 'Home Voice Assistant'),
     'c0972769bd52': ('Samsung', 'Stove'),
     'd828c9061c69': ('GE', 'Dryer'),
-    'd828c9061517': ('GE', 'Washer')
+    'd828c9061517': ('GE', 'Washer'),
+    '28395e4d2914': ('Samsung', 'Smart TV')
 }
 
 
