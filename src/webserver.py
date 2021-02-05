@@ -16,6 +16,24 @@ OK_JSON = json.dumps({'status': 'OK'})
 app = Flask(__name__)
 
 
+SHOW_DEVICE_TEMPLATE = """
+<html><head><title>Show Devices</title></head>
+<body>
+<h3>Devices under inspection</h3>
+<ul>
+{inspected_text}
+<ul>
+<hr />
+<h3>Devices not under inspection</h3>
+<ul>
+{not_inspected_text}
+<ul>
+</body>
+</html>
+
+"""
+
+
 def start_thread(host_state):
 
     GLOBAL_CONTEXT['host_state'] = host_state
@@ -47,12 +65,39 @@ def log_http_request(request_name):
             host_state.last_ui_contact_ts = time.time()
 
 
+@app.route('/show_devices', methods=['GET'])
+def show_devices():
+
+    inspected_text = ''
+    not_inspected_text = ''
+
+    for device_dict in get_device_list_helper().values():
+
+        name = device_dict['device_name']
+        vendor = device_dict['device_vendor']
+        device_id = device_dict['device_id']
+        if name == '' or vendor == '':
+            continue
+
+        if device_dict['is_inspected']:
+            inspected_text += f'<ul>{vendor} {name} <small>(<a href="/disable_inspection/{device_id}">Stop Inspection</a>)</small></ul>\n'
+        else:
+            not_inspected_text += f'<ul>{vendor} {name} <small>(<a href="/enable_inspection/{device_id}">Start Inspection</a>)</small></ul>\n'
+
+    return SHOW_DEVICE_TEMPLATE.format(inspected_text=inspected_text, not_inspected_text=not_inspected_text)
+
+
 @app.route('/get_device_list', methods=['GET'])
 def get_device_list():
     """
     Returns a list of devices; constantly changes.
 
     """
+    return json.dumps(get_device_list_helper, indent=2)
+
+
+def get_device_list_helper():
+
     # Maps device_id -> {device_id, device_vendor, netdisco_name}
     output_dict = {}
 
@@ -103,7 +148,7 @@ def get_device_list():
         # Reset pending dict
         host_state.pending_dhcp_dict = {}
 
-    return json.dumps(output_dict, indent=2)
+    return output_dict
 
 
 @app.route('/get_traffic', methods=['GET'])
