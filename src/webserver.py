@@ -19,6 +19,8 @@ app = Flask(__name__)
 SHOW_DEVICE_TEMPLATE = """
 <html><head><title>Show Devices</title></head>
 <body>
+<h1>Debug Interface for IoT Inspector Local</h1>
+<hr />
 <h3>Devices under inspection</h3>
 <ul>
 {inspected_text}
@@ -80,9 +82,9 @@ def show_devices():
             continue
 
         if device_dict['is_inspected']:
-            inspected_text += f'<ul>{vendor} {name} <small>(<a href="/disable_inspection/{device_id}">Stop Inspection</a>)</small></ul>\n'
+            inspected_text += f'<li>{vendor} {name} <small>(<a href="/disable_inspection/{device_id}">Stop Inspection</a>)</small></li>\n'
         else:
-            not_inspected_text += f'<ul>{vendor} {name} <small>(<a href="/enable_inspection/{device_id}">Start Inspection</a>)</small></ul>\n'
+            not_inspected_text += f'<li>{vendor} {name} <small>(<a href="/enable_inspection/{device_id}">Start Inspection</a>)</small></li>\n'
 
     return SHOW_DEVICE_TEMPLATE.format(inspected_text=inspected_text, not_inspected_text=not_inspected_text)
 
