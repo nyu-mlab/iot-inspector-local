@@ -120,12 +120,24 @@ def get_traffic():
     if host_state is None:
         return json.dumps(output_dict)
 
+    current_ts = time.time()
+
     with host_state.lock:
         # flow_key is a tuple of (device_id, device_port, remote_ip, remote_port, protocol)
         for flow_key in host_state.pending_flow_dict:
+            # Dest stats
             device_id = flow_key[0]
             dest_ip = flow_key[2]
             dest_domain = get_domain_name(host_state, device_id, dest_ip)
+            # Byte counters
+            flow_stats = host_state.pending_flow_dict[flow_key]
+            inbound_bps = 0
+            outbound_bps = 0
+            delta_ts = current_ts - host_state.last_get_traffic_ts
+            if delta_ts > 0:
+                inbound_bps = flow_stats['inbound_byte_count'] / delta_ts
+                outbound_bps = flow_stats['outbound_byte_count'] / delta_ts
+            # Send to output
             device_dict = output_dict.setdefault(device_id, {})
             if dest_ip not in device_dict:
                 device_dict[dest_ip] = {
@@ -135,12 +147,13 @@ def get_traffic():
                     'ip_country_code': '',              # TODO; not implemented
                     'purpose': '',                      # TODO; not implemented
                     'is_tracking': '',                  # TODO; not implemented
-                    'inbound_bytes_per_second': 0,     # TODO; not implemented
-                    'outbound_bytes_per_second': 0     # TODO; not implemented
+                    'inbound_bytes_per_second': inbound_bps,
+                    'outbound_bytes_per_second': outbound_bps
                 }
 
         # Reset pending
         host_state.pending_flow_dict = {}
+        host_state.last_get_traffic_ts = current_ts
 
     return json.dumps(output_dict, indent=2)
 
