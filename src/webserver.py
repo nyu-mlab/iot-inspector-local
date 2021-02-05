@@ -232,6 +232,9 @@ def get_traffic():
             device_id = flow_key[0]
             dest_ip = flow_key[2]
             dest_domain = get_domain_name(host_state, device_id, dest_ip)
+            # Make sure device is whitelisted
+            if device_id not in host_state.device_whitelist:
+                continue
             # Byte counters
             flow_stats = host_state.pending_flow_dict[flow_key]
             inbound_bps = 0
