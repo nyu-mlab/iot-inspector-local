@@ -367,6 +367,6 @@ def list_blocked_devices():
     host_state = get_host_state()
     if host_state is not None:
         with host_state.lock:
-            blocked_device_list = host_state.block_device_dict.keys()
+            blocked_device_list = list(host_state.block_device_dict.keys())
 
     return json.dumps(blocked_device_list)
