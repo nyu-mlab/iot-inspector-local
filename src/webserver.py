@@ -1,5 +1,7 @@
 from flask import Flask, g
 import threading
+
+import flask
 import utils
 import time
 import json
@@ -22,8 +24,8 @@ SHOW_DEVICE_TEMPLATE = """
 <h1>Debug Interface for Weijia to Take Devices Out of Inspection</h1>
 Instructions for Weijia:
 <ol>
-    <li>When you are able to experiment with a particular device, click the "Disable Inspection" link for that device (even if the device is currently not being inspected.) This will prevent others from inspecting the device.</li>
-    <li>When you are done with the experiment with that particular device, click the "Enable Inspection" link for that device.</li>
+    <li>When you are able to experiment with a particular device, click the "Block Inspection" link for that device (even if the device is currently not being inspected.) This will prevent others from inspecting the device.</li>
+    <li>When you are done with the experiment with that particular device, click the "Allow Inspection" link for that device.</li>
 </ol>
 <hr />
 <h3>Devices under inspection</h3>
@@ -78,6 +80,8 @@ def show_devices():
     inspected_text = ''
     not_inspected_text = ''
 
+    black_list = get_weijia_black_list()
+
     for device_dict in get_device_list_helper().values():
 
         name = device_dict['device_name']
@@ -86,7 +90,11 @@ def show_devices():
         if name == '' or vendor == '':
             continue
 
-        item = f'<li>{vendor} {name} <small>[<a href="/weijia_enable_inspection/{device_id}">Enable Inspection</a> | <a href="/weijia_disable_inspection/{device_id}">Disable Inspection</a>]</small></li>\n'
+        black_list_status = ''
+        if device_id in black_list:
+            black_list_status = '<i>(Currently blocked by Weijia)</i>'
+
+        item = f'<li>{vendor} {name} {black_list_status} <small>[<a href="/weijia_enable_inspection/{device_id}">Allow Inspection</a> | <a href="/weijia_disable_inspection/{device_id}">Block Inspection</a>]</small></li>\n'
 
         if device_dict['is_inspected']:
             inspected_text += item
@@ -119,7 +127,9 @@ def weijia_enable_inspection(device_id):
         black_list.remove(device_id)
     set_weijia_black_list(black_list)
 
-    return enable_inspection(device_id)
+    enable_inspection(device_id)
+
+    return flask.redirect('/weijia_control_devices')
 
 
 @app.route('/weijia_disable_inspection/<device_id>', methods=['GET'])
@@ -130,7 +140,9 @@ def weijia_disable_inspection(device_id):
         black_list.append(device_id)
     set_weijia_black_list(black_list)
 
-    return disable_inspection(device_id)
+    disable_inspection(device_id)
+
+    return flask.redirect('/weijia_control_devices')
 
 
 @app.route('/get_device_list', methods=['GET'])
