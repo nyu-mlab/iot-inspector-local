@@ -95,7 +95,7 @@ def get_device_list():
     Returns a list of devices; constantly changes.
 
     """
-    return json.dumps(get_device_list_helper, indent=2)
+    return json.dumps(get_device_list_helper(), indent=2)
 
 
 def get_device_list_helper():
