@@ -5,7 +5,7 @@ import flask
 import utils
 import time
 import json
-import oui_parser
+import host_blocklist
 import device_identification
 
 
@@ -249,7 +249,7 @@ def get_traffic():
                     'owner_company': '',                # TODO; not implemented
                     'ip_country_code': '',              # TODO; not implemented
                     'purpose': '',                      # TODO; not implemented
-                    'is_tracking': '',                  # TODO; not implemented
+                    'is_tracking': host_blocklist.is_hostname_blocked(dest_domain),
                     'inbound_bytes_per_second': inbound_bps,
                     'outbound_bytes_per_second': outbound_bps
                 }

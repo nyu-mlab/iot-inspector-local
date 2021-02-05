@@ -66,11 +66,13 @@ Do the following from the AR app:
             {
                 "72.12.13.14": {
                     "hostname": "server1.googleusercontents.com",
+                    "is_tracking": False,
                     "inbound_bytes_per_second": 23,
                     "outbound_bytes_per_second": 32
                 },
                 "35.112.131.5": {
-                    "hostname": "server1.fbcdn.com",
+                    "hostname": "doubleclick.com",
+                    "is_tracking": True,
                     "inbound_bytes_per_second": 23,
                     "outbound_bytes_per_second": 32
                 },

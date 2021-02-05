@@ -5,3 +5,4 @@ scapy-http
 netdisco
 netifaces
 flask
+tldextract
