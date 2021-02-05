@@ -13,7 +13,7 @@ import time
 MIN_ARP_SPOOF_INTERVAL = 0.01
 
 # If we want to block a device, we should use the follow corrupt mac address as the source.
-CORRUPT_MAC_ADDRESS = '001122334455'
+CORRUPT_MAC_ADDRESS = '00:11:22:33:44:55'
 
 
 class ArpSpoof(object):
@@ -77,10 +77,10 @@ class ArpSpoof(object):
                 continue
 
             whitelist_ip_mac = []
-            
+
             # Add gateway
             whitelist_ip_mac.append((gateway_ip, gateway_mac))
-            
+
             # Build device-to-device whitelist
             for ip, mac in ip_mac_dict.items():
                 device_id = utils.get_device_id(mac, self._host_state)
@@ -121,8 +121,8 @@ class ArpSpoof(object):
     def _arp_spoof(self, victim_device_id, victim_mac, victim_ip, whitelist_ip_mac):
         """Sends out spoofed packets for a single target."""
 
-        # Check if we want to block this device now     
-        block_device = False   
+        # Check if we want to block this device now
+        block_device = False
         try:
             with self._host_state.lock:
                 (block_start_ts, block_stop_ts) = self._host_state.block_device_dict[victim_device_id]
@@ -159,7 +159,7 @@ class ArpSpoof(object):
 
             if block_device:
                 dest_arp.hwsrc = CORRUPT_MAC_ADDRESS
-                victim_arp.hwsrc = CORRUPT_MAC_ADDRESS                
+                victim_arp.hwsrc = CORRUPT_MAC_ADDRESS
 
             sc.send(victim_arp, verbose=0)
             sc.send(dest_arp, verbose=0)
