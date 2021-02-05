@@ -24,12 +24,12 @@ SHOW_DEVICE_TEMPLATE = """
 <h3>Devices under inspection</h3>
 <ul>
 {inspected_text}
-<ul>
+</ul>
 <hr />
 <h3>Devices not under inspection</h3>
 <ul>
 {not_inspected_text}
-<ul>
+</ul>
 </body>
 </html>
 
