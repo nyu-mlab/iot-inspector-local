@@ -96,6 +96,7 @@ Do the following from the AR app:
 * `/enable_inspection/<device_id>`: Instructs IoT Inspector to start collecting network traffic from a given `device_id`.
 * `/get_traffic`: Returns network traffic from every inspected device between the last time you called this API and now.
 * `/disable_inspection/<device_id>`: Instructs IoT Inspector to stop collecting network traffic from a given `device_id`.
+* `/disable_all_inspection`: Stop collecting traffic for all devices.
 * `/shutdown`: Stops inspecting all traffic and quits IoT Inspector Local.
 * `/block_device/<device_id>/<start_unix_ts>/<stop_unix_ts>`: Sends wrong spoofed ARP packets to `device_id` (effectively blocking the device) between two UNIX timestamps (epoch). You can call this function multiple times to update the start and stop timestamps.
 * `/unblock_device/<device_id>`: Unblocks that device.

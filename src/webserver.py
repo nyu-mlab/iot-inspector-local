@@ -309,6 +309,17 @@ def disable_inspection(device_id):
     return OK_JSON
 
 
+@app.route('/disable_all_inspection', methods=['GET'])
+def disable_all_inspection():
+
+    host_state = get_host_state()
+    if host_state is not None:
+        with host_state.lock:
+            host_state.device_whitelist = []
+
+    return OK_JSON
+
+
 @app.route('/enable_inspection/<device_id>', methods=['GET'])
 def enable_inspection(device_id):
 
