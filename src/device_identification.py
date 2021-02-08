@@ -17,7 +17,8 @@ MAC_TO_NAME_MAPPING = {
     'c0972769bd52': ('Samsung', 'Samsung Stove'),
     'd828c9061c69': ('GE', 'GE Dryer'),
     'd828c9061517': ('GE', 'GE Washer'),
-    '28395e4d2914': ('Samsung', 'Samsung Smart TV')
+    '28395e4d2914': ('Samsung', 'Samsung Smart TV'),
+    'f0f0a4f8e5fc': ('Amazon', 'Amazon Fire Stick TV')
 }
 
 
