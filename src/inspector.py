@@ -105,12 +105,7 @@ def start():
             pretty_user_key += '-'
         pretty_user_key += char
 
-    print('\n' * 100)
-
-    os_platform = utils.get_os()
-
-    if os_platform == 'windows':
-        print(WINDOWS_STARTUP_TEXT.format(server_config.BASE_URL, pretty_user_key))
+    print('Ready. To test if the API works, visit http://127.0.0.1:46241/get_device_list')
 
     return state
 
